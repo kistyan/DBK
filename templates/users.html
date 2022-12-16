@@ -1,0 +1,243 @@
+{% if role == '' %}
+<meta http-equiv="refresh" content="0; url='/'" />
+{% else %}
+{% extends "base.html" %}
+{% block table_functionality %}
+<div class="container">
+    <form id="title" class="title">Пользователи</form>
+</div>
+<div class="container">
+    <form id="balance" class="title" style="display: none;"><b>Баланс:</b></form>
+</div>
+<div id="c1" class="container">
+    <div style="float: center;">
+        <div style="display: table;">
+            <table id="tableUsers">
+                {% block table_users_content %}
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Balance</th>
+                    <th>Role</th>
+                </tr>
+                {% block table_users %}
+                {% for user in users %}
+                <tr>
+                    <td>{{ user['id'] }}</td>
+                    <td>{{ user['name'] }}</td>
+                    <td>{{ user['balance'] }}</td>
+                    <td>{{ user['role'] }}</td>
+                </tr>
+                {% endfor %}
+                {% endblock %}
+                {% endblock %}
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="c11h" class="container" style="display: none;">
+    <form class="title">История посещений</form>
+</div>
+<div id="c11" class="container"  style="display: none; margin-bottom: 20px;">
+    <div style="float: center;">
+        <div style="display: table;">
+            <table id="table1">
+                {% block table_history_content %}
+                <tr>
+                    <th>Id</th>
+                    <th>Book id</th>
+                    <th>Date</th>
+                </tr>
+                {% endblock %}
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="c12h" class="container" style="display: none;">
+    <form class="title">Понравившиеся книги</form>
+</div>
+<div id="c12" class="container"  style="display: none; margin-bottom: 20px;">
+    <div style="float: center;">
+        <div style="display: table;">
+            <table id="table2">
+                {% block table_favorite_books_content %}
+                <tr>
+                    <th>Id</th>
+                    <th>Author id</th>
+                    <th>Publisher id</th>
+                    <th>Name</th>
+                    <th>Genre</th>
+                    <th>Price</th>
+                </tr>
+                {% endblock %}
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="c13h" class="container" style="display: none;">
+    <form class="title">Купленные книги</form>
+</div>
+<div id="c13" class="container"  style="display: none; margin-bottom: 20px;">
+    <div style="float: center;">
+        <div style="display: table;">
+            <table id="table3">
+                {% block table_purchased_books_content %}
+                <tr>
+                    <th>Id</th>
+                    <th>Author id</th>
+                    <th>Publisher id</th>
+                    <th>Name</th>
+                    <th>Genre</th>
+                    <th>Price</th>
+                    <th>Date</th>
+                </tr>
+                {% endblock %}
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="c14h" class="container" style="display: none;">
+    <form class="title">Отзывы</form>
+</div>
+<div id="c14" class="container"  style="display: none; margin-bottom: 20px;">
+    <div style="float: center;">
+        <div style="display: table;">
+            <table id="table4">
+                {% block table_reviews_content %}
+                <tr>
+                    <th>Id</th>
+                    <th>Book id</th>
+                    <th>Grade</th>
+                    <th>Text</th>
+                </tr>
+                {% endblock %}
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="c15h" class="container" style="display: none;">
+    <form class="title">Промокоды</form>
+</div>
+<div id="c15" class="container" style="display: none; margin-bottom: 20px;">
+    <div style="float: center;">
+        <div style="display: table;">
+            <table id="table5">
+                {% block table_promo_codes_content %}
+                <tr>
+                    <th>Id</th>
+                    <th>Book id</th>
+                    <th>Code</th>
+                    <th>Discount</th>
+                    <th>Valid until</th>
+                </tr>
+                {% endblock %}
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_content %}
+<div class="container" style="margin-top: 30px;">
+<div style="display: flex; float: center; justify-content: center; align-items: center;">
+    <form id="formSelect" style="display: flex; float: center; justify-content: center; align-items: center;">
+        <label for="user_id">Id</label>
+        <input type=number step=1 min=0 id="user_id" name="user_id" style="margin: 10px;" placeholder="all"/><br/>
+        <button type="submit" class="selected" style="margin: 10px;">Выбрать пользователя</button>
+    </form>
+</div>
+</div>
+ <script type="text/javascript">
+$(document).ready(function() {
+$("#formSelect").on('submit', function(event){
+if ($('#user_id').val() == '') {
+    document.getElementById('title').innerHTML = 'Пользователи';
+    document.getElementById('balance').style.display = 'none';
+    document.getElementById('c1').style.display = 'flex';
+    document.getElementById('c11h').style.display = 'none';
+    document.getElementById('c12h').style.display = 'none';
+    document.getElementById('c13h').style.display = 'none';
+    document.getElementById('c14h').style.display = 'none';
+    document.getElementById('c15h').style.display = 'none';
+    document.getElementById('c11h').style.display = 'none';
+    document.getElementById('c12h').style.display = 'none';
+    document.getElementById('c13h').style.display = 'none';
+    document.getElementById('c14h').style.display = 'none';
+    document.getElementById('c15h').style.display = 'none';
+}
+else {
+$.ajax({
+method: "POST",
+url: "{{ url_for('get_user_data') }}",
+data: jQuery.param({'user_id': $('#user_id').val()})
+})
+.done(function (response) {
+console.log(response);
+if(response.error) {
+$('#errorAlert').text(response.error).show();
+$('#successAlert').hide();
+} else {
+$('#errorAlert').hide();
+    document.getElementById('title').innerHTML = '<b>ФИО:</b> ' + response[0][0].name;
+    document.getElementById('balance').style.display = 'block';
+    document.getElementById('balance').innerHTML = '<b>Баланс:</b> ' + response[0][0].balance;
+    document.getElementById('c1').style.display = 'none';
+
+    document.getElementById('c11h').style.display = 'flex';
+    document.getElementById('c11').style.display = 'flex';
+    var t1 = document.getElementById('table1');
+    for(var i = t1.rows.length; i > 1; i--) {
+        t1.deleteRow(1);
+    }
+    $.each(response[1],function(i, item){$('<tr>').append($('<td>').text(item.id),$('<td>').text(item.book_id),$('<td>').text(item.date)).appendTo(t1)});
+
+    document.getElementById('c12h').style.display = 'flex';
+    document.getElementById('c12').style.display = 'flex';
+    var t2 = document.getElementById('table2');
+    for(var i = t2.rows.length; i > 1; i--) {
+        t2.deleteRow(1);
+    }
+    $.each(response[2],function(i, item){$('<tr>').append($('<td>').text(item.id),$('<td>').text(item.author_id),$('<td>').text(item.publisher_id),$('<td>').text(item.name),$('<td>').text(item.genre),$('<td>').text(item.price)).appendTo(t2)});
+
+    document.getElementById('c13h').style.display = 'flex';
+    document.getElementById('c13').style.display = 'flex';
+    var t3 = document.getElementById('table3');
+    for(var i = t3.rows.length; i > 1; i--) {
+        t3.deleteRow(1);
+    }
+    $.each(response[3],function(i, item){$('<tr>').append($('<td>').text(item.id),$('<td>').text(item.author_id),$('<td>').text(item.publisher_id),$('<td>').text(item.name),$('<td>').text(item.genre),$('<td>').text(item.price),$('<td>').text(item.date)).appendTo(t3)});
+
+    document.getElementById('c14h').style.display = 'flex';
+    document.getElementById('c14').style.display = 'flex';
+    var t4 = document.getElementById('table4');
+    for(var i = t4.rows.length; i > 1; i--) {
+        t4.deleteRow(1);
+    }
+    $.each(response[4],function(i, item){$('<tr>').append($('<td>').text(item.id),$('<td>').text(item.book_id),$('<td>').text(item.grade),$('<td>').text(item.text)).appendTo(t4)});
+
+    document.getElementById('c15h').style.display = 'flex';
+    document.getElementById('c15').style.display = 'flex';
+    var t5 = document.getElementById('table5');
+    for(var i = t5.rows.length; i > 1; i--) {
+        t5.deleteRow(1);
+    }
+    $.each(response[5],function(i, item){$('<tr>').append($('<td>').text(item.id),$('<td>').text(item.book_id),$('<td>').text(item.code),$('<td>').text(item.discount),$('<td>').text(item.valid_until)).appendTo(t5)});
+}
+});
+event.preventDefault();
+}
+});
+});
+</script>
+<script type="text/javascript">
+    window.onload = function() {
+        document.getElementById('#form users_b').className = 'really_selected';
+    }
+</script>
+{% endblock %}
+{% endif %}

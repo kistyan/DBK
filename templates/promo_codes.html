@@ -1,0 +1,151 @@
+{% if role != 'admin' %}
+<meta http-equiv="refresh" content="0; url='/'" />
+{% else %}
+{% extends "base.html" %}
+{% block table_functionality %}
+<div class="container">
+    <form class="title">Промокоды</form>
+</div>
+<div class="container">
+    <div style="float: center;">
+        <div style="display: table;">
+            <table id="tablePromoCodes">
+                {% block table_content %}
+                <tr>
+                    <th>Id</th>
+                    <th>Book id</th>
+                    <th>Code</th>
+                    <th>Discount</th>
+                    <th>Valid until</th>
+                </tr>
+                {% block table_promo_codes %}
+                {% for promo_code in promo_codes %}
+                <tr>
+                    <td>{{ promo_code['id'] }}</td>
+                    <td>{{ promo_code['book_id'] }}</td>
+                    <td>{{ promo_code['code'] }}</td>
+                    <td>{{ promo_code['discount'] }}</td>
+                    <td>{{ promo_code['valid_until'] }}</td>
+                </tr>
+                {% endfor %}
+                {% endblock %}
+                {% endblock %}
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_content %}
+<div class="container" style="margin: 30px;">
+<div style="float: center;" id="successAlert" class="alert alertsuccess" role="alert"></div>
+<div role="alert"></div>
+<div style="display: flex; float: center; justify-content: center; align-items: center;">
+    <form id="formAdd" style="display: flex; float: center; justify-content: center; align-items: center;">
+        <label for="book">Book id</label>
+        <input type=number step=1 min=0 id="book" name="book" style="margin: 10px;" placeholder="0"/><br/>
+        <label for="code">Code</label>
+        <input type="text" id="code" name="code" style="margin: 10px;" placeholder="Код"/><br/>
+        <label for="discount">Discount</label>
+        <input type=number step=0.01 min=0.00 id="discount" style="margin: 10px;" name="discount" placeholder="0.00"/><br/>
+        <label for="valid_until">Valid until</label>
+        <input type=datetime-local id="valid_until" style="margin: 10px;" name="valid_until"/><br/>
+        <button type="submit" class="selected" style="margin: 10px;">Добавить промокод</button>
+    </form>
+</div>
+</div>
+<div class="container" style="margin-top: -25px;">
+<div style="display: flex; float: center; justify-content: center; align-items: center;">
+    <form id="formDel" style="display: flex; float: center; justify-content: center; align-items: center;">
+        <label for="id">Id</label>
+        <input type=number step=1 min=0 id="id" name="id" style="margin: 10px;" placeholder="0"/><br/>
+        <button type="submit" class="selected" style="margin: 10px;">Удалить промокод</button>
+    </form>
+</div>
+</div>
+ <script type="text/javascript">
+$(document).ready(function() {
+$("#formDel").on('submit', function(event){
+$.ajax({
+method: "POST",
+url: "{{ url_for('del_promo_code') }}",
+data: jQuery.param({'id': $('#id').val()})
+})
+.done(function (response) {
+console.log(response);
+if(response.error) {
+$('#errorAlert').text(response.error).show();
+$('#successAlert').hide();
+} else {
+$('#errorAlert').hide();
+var table = document.getElementById('tablePromoCodes');
+var done = false;
+for(var i = table.rows.length - 1; (i > 0) && !done; i--){
+if(table.rows.item(i).cells.item(0).innerText == response.id) {
+done = true;
+table.deleteRow(i);
+}
+}
+}
+});
+event.preventDefault();
+});
+});
+</script>
+<script type="text/javascript">
+ $(document).ready(function() {
+ $('#formAdd').on('submit', function(event){
+ $.ajax({
+    method: "POST",
+    url: "{{ url_for('add_promo_code') }}",
+    data: jQuery.param({
+        'book_id': $('#book').val(),
+        'code': $('#code').val(),
+        'discount': $('#discount').val(),
+        'valid_until': $('#valid_until').val()
+    })
+ })
+ .done(function (response) {console.log(response);
+ if(response.error) {
+ $('#errorAlert').text(response.error).show();
+ $('#successAlert').hide();
+ } else {
+ $('#errorAlert').hide();
+     var tRow = document.createElement("tr");
+
+     var tDataId = document.createElement("td");
+     tDataId.innerHTML = response.id;
+     tRow.appendChild(tDataId);
+
+     var tDataBookId = document.createElement("td");
+     tDataBookId.innerHTML = response.book_id;
+     tRow.appendChild(tDataBookId);
+
+     var tDataCode = document.createElement("td");
+     tDataCode.innerHTML = response.code;
+     tRow.appendChild(tDataCode);
+
+     var tDataDiscount = document.createElement("td");
+     tDataDiscount.innerHTML = response.discount;
+     tRow.appendChild(tDataDiscount);
+
+
+     var tDataValidUntil = document.createElement("td");
+     tDataValidUntil.innerHTML = response.valid_until;
+     tRow.appendChild(tDataValidUntil);
+
+     var table = document.getElementById('tablePromoCodes');
+     table.append(tRow);
+ }
+ });
+ event.preventDefault();
+ });
+ });
+</script>
+<script type="text/javascript">
+    window.onload = function() {
+        document.getElementById('#form promocodes_b').className = 'really_selected';
+    }
+</script>
+{% endblock %}
+{% endif %}

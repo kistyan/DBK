@@ -1,0 +1,162 @@
+{% if role == '' %}
+<meta http-equiv="refresh" content="0; url='/'" />
+{% else %}
+{% extends "base.html" %}
+{% block table_functionality %}
+<div class="container">
+    <form class="title">Книги</form>
+</div>
+<div class="container">
+    <div style="float: center;">
+        <div style="display: table;">
+            <table id="tableBooks">
+                {% block table_content %}
+                <tr>
+                    <th>Id</th>
+                    <th>Author id</th>
+                    <th>Publisher id</th>
+                    <th>Name</th>
+                    <th>Genre</th>
+                    <th>Price</th>
+                </tr>
+                {% block table_books %}
+                {% for book in books %}
+                <tr>
+                    <td>{{ book['id'] }}</td>
+                    <td>{{ book['author_id'] }}</td>
+                    <td>{{ book['publisher_id'] }}</td>
+                    <td>{{ book['name'] }}</td>
+                    <td>{{ book['genre'] }}</td>
+                    <td>{{ book['price'] }}</td>
+                </tr>
+                {% endfor %}
+                {% endblock %}
+                {% endblock %}
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_content %}
+{% if role == 'admin' %}
+<div class="container" style="margin: 30px;">
+<div style="float: center;" id="successAlert" class="alert alertsuccess" role="alert"></div>
+<div style="float: center;" id="errorAlert" class="alert alert-error"
+     role="alert"></div>
+<div style="display: flex; float: center; justify-content: center; align-items: center;">
+    <form id="formAdd" style="display: flex; float: center; justify-content: center; align-items: center;">
+        <label for="author">Author id</label>
+        <input type=number step=1 min=0 id="author" name="author" style="margin: 10px;" placeholder="0"/><br/>
+        <label for="author">Publisher id</label>
+        <input type=number step=1 min=0 id="publisher" name="publisher" style="margin: 10px;" placeholder="0"/><br/>
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" style="margin: 10px;" placeholder="Название"/><br/>
+        <label for="genre">Genre</label>
+        <input type="text" id="genre" name="genre" style="margin: 10px;" placeholder="Жанр"/><br/>
+        <label for="price">Price</label>
+        <input type=number step=0.01 min=0.00 id="price" style="margin: 10px;" name="price" placeholder="0.00"/><br/>
+        <button type="submit" class="selected" style="margin: 10px;">Добавить книгу</button>
+    </form>
+</div>
+</div>
+<div class="container" style="margin-top: -25px;">
+<div style="display: flex; float: center; justify-content: center; align-items: center;">
+    <form id="formDel" style="display: flex; float: center; justify-content: center; align-items: center;">
+        <label for="id">Id</label>
+        <input type=number step=1 min=0 id="id" name="id" style="margin: 10px;" placeholder="0"/><br/>
+        <button type="submit" class="selected" style="margin: 10px;">Удалить книгу</button>
+    </form>
+</div>
+</div>
+ <script type="text/javascript">
+$(document).ready(function() {
+$("#formDel").on('submit', function(event){
+$.ajax({
+method: "POST",
+url: "{{ url_for('del_book') }}",
+data: jQuery.param({'id': $('#id').val()})
+})
+.done(function (response) {
+console.log(response);
+if(response.error) {
+$('#errorAlert').text(response.error).show();
+$('#successAlert').hide();
+} else {
+$('#errorAlert').hide();
+var table = document.getElementById('tableBooks');
+var done = false;
+for(var i = table.rows.length - 1; (i > 0) && !done; i--){
+if(table.rows.item(i).cells.item(0).innerText == response.id) {
+done = true;
+table.deleteRow(i);
+}
+}
+}
+});
+event.preventDefault();
+});
+});
+</script>
+<script type="text/javascript">
+ $(document).ready(function() {
+ $('#formAdd').on('submit', function(event){
+ $.ajax({
+    method: "POST",
+    url: "{{ url_for('add_book') }}",
+    data: jQuery.param({
+        'author_id': $('#author').val(),
+        'publisher_id': $('#publisher').val(),
+        'name': $('#name').val(),
+        'genre': $('#genre').val(),
+        'price': $('#price').val()
+    })
+ })
+ .done(function (response) {console.log(response);
+ if(response.error) {
+ $('#errorAlert').text(response.error).show();
+ $('#successAlert').hide();
+ } else {
+ $('#errorAlert').hide();
+     var tRow = document.createElement("tr");
+
+     var tDataId = document.createElement("td");
+     tDataId.innerHTML = response.id;
+     tRow.appendChild(tDataId);
+
+     var tDataAuthorId = document.createElement("td");
+     tDataAuthorId.innerHTML = response.author_id;
+     tRow.appendChild(tDataAuthorId);
+
+     var tDataPublisherId = document.createElement("td");
+     tDataPublisherId.innerHTML = response.publisher_id;
+     tRow.appendChild(tDataPublisherId);
+
+     var tDataName = document.createElement("td");
+     tDataName.innerHTML = response.name;
+     tRow.appendChild(tDataName);
+
+     var tDataGenre = document.createElement("td");
+     tDataGenre.innerHTML = response.genre;
+     tRow.appendChild(tDataGenre);
+
+     var tDataPrice = document.createElement("td");
+     tDataPrice.innerHTML = response.price;
+     tRow.appendChild(tDataPrice);
+
+     var table = document.getElementById('tableBooks');
+     table.append(tRow);
+ }
+ });
+ event.preventDefault();
+ });
+ });
+</script>
+{% endif %}
+<script type="text/javascript">
+    window.onload = function() {
+        document.getElementById('#form books_b').className = 'really_selected';
+    }
+</script>
+{% endblock %}
+{% endif %}

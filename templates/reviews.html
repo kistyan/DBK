@@ -1,0 +1,178 @@
+{% if role == '' %}
+<meta http-equiv="refresh" content="0; url='/'" />
+{% else %}
+{% extends "base.html" %}
+{% block table_functionality %}
+<div class="container">
+    <form id="title" class="title">Отзывы</form>
+</div>
+<div class="container">
+    <div style="float: center;">
+        <div style="display: table;">
+            <table id="tableReviews">
+                {% block table_content %}
+                <tr>
+                    <th>Id</th>
+                    <th>Book id</th>
+                    <th>User id</th>
+                    <th>Grade</th>
+                    <th>Text</th>
+                </tr>
+                {% block table_reviews %}
+                {% for review in reviews %}
+                <tr>
+                    <td>{{ review['id'] }}</td>
+                    <td>{{ review['book_id'] }}</td>
+                    <td>{{ review['user_id'] }}</td>
+                    <td>{{ review['grade'] }}</td>
+                    <td>{{ review['text'] }}</td>
+                </tr>
+                {% endfor %}
+                {% endblock %}
+                {% endblock %}
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_content %}
+<div class="container" style="margin: 30px;">
+<div style="float: center;" id="successAlert" class="alert alertsuccess" role="alert"></div>
+<div style="float: center;" id="errorAlert" class="alert alert-error"
+     role="alert"></div>
+<div style="display: flex; float: center; justify-content: center; align-items: center;">
+    <form id="formAdd" style="display: flex; float: center; justify-content: center; align-items: center;">
+        <label for="book">Book id</label>
+        <input type=number step=1 min=0 id="book" name="book" style="margin: 10px;" placeholder="0"/><br/>
+        <label for="user" {% if role == 'visitor' %}style="display: none;"{% endif %}>User id</label>
+        <input type=number step=1 min=0 id="user" name="user" style="{% if role == 'visitor' %}display: none;{% endif %}margin: 10px;" placeholder="0"/><br/>
+        <label for="grade">Grade</label>
+        <input type=number step=1 min=0 id="grade" name="grade" style="margin: 10px;" placeholder="0"/><br/>
+        <label for="text">Text</label>
+        <input type="text" id="text" name="text" style="margin: 10px;" placeholder="Текст"/><br/>
+        <button type="submit" class="selected" style="margin: 10px;">Добавить отзыв</button>
+    </form>
+</div>
+</div>
+<div class="container" style="margin-top: -26px;">
+<div style="display: flex; float: center; justify-content: center; align-items: center;">
+    <form id="formSelect" style="display: flex; float: center; justify-content: center; align-items: center;">
+        <label for="book_id">Id книги</label>
+        <input type=number step=1 min=0 id="book_id" name="book_id" style="margin: 10px;" placeholder="all"/><br/>
+        <button type="submit" class="selected" style="margin: 10px;">Выбрать книгу</button>
+    </form>
+</div>
+</div>
+ <script type="text/javascript">
+$(document).ready(function() {
+$("#formSelect").on('submit', function(event){
+$.ajax({
+method: "POST",
+url: "{{ url_for('get_book_reviews') }}",
+data: jQuery.param({'book_id': $('#book_id').val()})
+})
+.done(function (response) {
+console.log(response);
+if(response.error) {
+$('#errorAlert').text(response.error).show();
+$('#successAlert').hide();
+} else {
+$('#errorAlert').hide();
+if ($('#book_id').val() == '')
+    document.getElementById('title').innerHTML = 'Отзывы';
+else
+    document.getElementById('title').innerHTML = 'Отзывы о книге';
+var table = document.getElementById('tableReviews');
+var done = false;
+for(var i = table.rows.length; i > 1; i--) {
+table.deleteRow(1);
+}
+for(var i = 0; i < response.length; i++) {
+     var tRow = document.createElement("tr");
+
+     var tDataId = document.createElement("td");
+     tDataId.innerHTML = response[i].id;
+     tRow.appendChild(tDataId);
+
+     var tDataBookId = document.createElement("td");
+     tDataBookId.innerHTML = response[i].book_id;
+     tRow.appendChild(tDataBookId);
+
+     var tDataUserId = document.createElement("td");
+     tDataUserId.innerHTML = response[i].user_id;
+     tRow.appendChild(tDataUserId);
+
+     var tDataGrade = document.createElement("td");
+     tDataGrade.innerHTML = response[i].grade;
+     tRow.appendChild(tDataGrade);
+
+     var tDataText = document.createElement("td");
+     tDataText.innerHTML = response[i].text;
+     tRow.appendChild(tDataText);
+
+     var table = document.getElementById('tableReviews');
+     table.append(tRow);
+}
+}
+});
+event.preventDefault();
+});
+});
+</script>
+<script type="text/javascript">
+ $(document).ready(function() {
+ $('#formAdd').on('submit', function(event){
+ $.ajax({
+    method: "POST",
+    url: "{{ url_for('add_review') }}",
+    data: jQuery.param({
+        'book_id': $('#book').val(),
+        'user_id': {% if role == 'visitor' %}{{ user_id }}{% else %}$('#user').val(){% endif %},
+        'grade': $('#grade').val(),
+        'text': $('#text').val()
+    })
+ })
+ .done(function (response) {console.log(response);
+ if(response.error) {
+ $('#errorAlert').text(response.error).show();
+ $('#successAlert').hide();
+ } else {
+ $('#errorAlert').hide();
+     var tRow = document.createElement("tr");
+
+     var tDataId = document.createElement("td");
+     tDataId.innerHTML = response.id;
+     tRow.appendChild(tDataId);
+
+     var tDataBookId = document.createElement("td");
+     tDataBookId.innerHTML = response.book_id;
+     tRow.appendChild(tDataBookId);
+
+     var tDataUserId = document.createElement("td");
+     tDataUserId.innerHTML = response.user_id;
+     tRow.appendChild(tDataUserId);
+
+     var tDataGrade = document.createElement("td");
+     tDataGrade.innerHTML = response.grade;
+     tRow.appendChild(tDataGrade);
+
+     var tDataText = document.createElement("td");
+     tDataText.innerHTML = response.text;
+     tRow.appendChild(tDataText);
+
+     var table = document.getElementById('tableReviews');
+     table.append(tRow);
+ }
+ });
+ event.preventDefault();
+ });
+ });
+</script>
+<script type="text/javascript">
+    window.onload = function() {
+        document.getElementById('#form reviews_b').className = 'really_selected';
+    }
+</script>
+{% endblock %}
+{% endif %}
