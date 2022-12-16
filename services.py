@@ -58,8 +58,7 @@ def get_book_reviews(json):
     return [model_to_dict(model) for model in query]
 
 
-def get_user_data(json):
-    user_id = json.to_dict()['user_id']
+def get_user_data(user_id):
     data = [
         models.User.select().where(models.User.id == user_id),
         reversed(models.View.select().where(models.View.user_id == user_id).order_by(models.View.date)),

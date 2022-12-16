@@ -76,8 +76,11 @@ table, th, td {
         <form id="#form reviews" style="display: {% if role != '' %}inline{% else %}none{% endif %};" action="/Reviews" method="GET">
             <input id="#form reviews_b" class="selected" type="submit" value="Отзывы"/>
         </form>
-        <form id="#form users" style="display: {% if role != '' %}inline{% else %}none{% endif %};" action="/Users" method="GET">
+        <form id="#form users" style="display: {% if role == 'admin' %}inline{% else %}none{% endif %};" action="/Users" method="GET">
             <input id="#form users_b" class="selected" type="submit" value="Пользователи"/>
+        </form>
+        <form id="#form profile" style="display: {% if role == 'visitor' %}inline{% else %}none{% endif %};" action="/Profile" method="GET">
+            <input id="#form profile_b" class="selected" type="submit" value="Профиль"/>
         </form>
     </div>
 <br/>

@@ -1,0 +1,181 @@
+{% if role == '' %}
+<meta http-equiv="refresh" content="0; url='/'" />
+{% else %}
+{% extends "base.html" %}
+{% block table_functionality %}
+<div class="container">
+    <form id="title" class="title"><b>ФИО: </b>{{ name }}</form>
+</div>
+<div class="container">
+    <form id="balance" class="title"><b>Баланс: </b>{{ balance }}</form>
+</div>
+
+<div id="c11h" class="container" style="display: flex;">
+    <form class="title">История посещений</form>
+</div>
+<div id="c11" class="container"  style="display: flex; margin-bottom: 20px;">
+    <div style="float: center;">
+        <div style="display: table;">
+            <table id="table1">
+                {% block table_history_content %}
+                <tr>
+                    <th>Id</th>
+                    <th>Book id</th>
+                    <th>Date</th>
+                </tr>
+                {% block table_history %}
+                {% for view in history %}
+                <tr>
+                    <td>{{ view['id'] }}</td>
+                    <td>{{ view['book_id'] }}</td>
+                    <td>{{ view['date'] }}</td>
+                </tr>
+                {% endfor %}
+                {% endblock %}
+                {% endblock %}
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="c12h" class="container" style="display: flex;">
+    <form class="title">Понравившиеся книги</form>
+</div>
+<div id="c12" class="container"  style="display: flex; margin-bottom: 20px;">
+    <div style="float: center;">
+        <div style="display: table;">
+            <table id="table2">
+                {% block table_favorite_books_content %}
+                <tr>
+                    <th>Id</th>
+                    <th>Author id</th>
+                    <th>Publisher id</th>
+                    <th>Name</th>
+                    <th>Genre</th>
+                    <th>Price</th>
+                </tr>
+                {% block table_favorite_books %}
+                {% for book in favorite_books %}
+                <tr>
+                    <td>{{ book['id'] }}</td>
+                    <td>{{ book['author_id'] }}</td>
+                    <td>{{ book['publisher_id'] }}</td>
+                    <td>{{ book['name'] }}</td>
+                    <td>{{ book['genre'] }}</td>
+                    <td>{{ book['price'] }}</td>
+                </tr>
+                {% endfor %}
+                {% endblock %}
+                {% endblock %}
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="c13h" class="container" style="display: flex;">
+    <form class="title">Купленные книги</form>
+</div>
+<div id="c13" class="container"  style="display: flex; margin-bottom: 20px;">
+    <div style="float: center;">
+        <div style="display: table;">
+            <table id="table3">
+                {% block table_purchased_books_content %}
+                <tr>
+                    <th>Id</th>
+                    <th>Author id</th>
+                    <th>Publisher id</th>
+                    <th>Name</th>
+                    <th>Genre</th>
+                    <th>Price</th>
+                    <th>Date</th>
+                </tr>
+                {% block table_purchased_books %}
+                {% for book in purchased_books %}
+                <tr>
+                    <td>{{ book['id'] }}</td>
+                    <td>{{ book['author_id'] }}</td>
+                    <td>{{ book['publisher_id'] }}</td>
+                    <td>{{ book['name'] }}</td>
+                    <td>{{ book['genre'] }}</td>
+                    <td>{{ book['price'] }}</td>
+                    <td>{{ book['date'] }}</td>
+                </tr>
+                {% endfor %}
+                {% endblock %}
+                {% endblock %}
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="c14h" class="container" style="display: flex;">
+    <form class="title">Отзывы</form>
+</div>
+<div id="c14" class="container"  style="display: flex; margin-bottom: 20px;">
+    <div style="float: center;">
+        <div style="display: table;">
+            <table id="table4">
+                {% block table_reviews_content %}
+                <tr>
+                    <th>Id</th>
+                    <th>Book id</th>
+                    <th>Grade</th>
+                    <th>Text</th>
+                </tr>
+                {% block table_reviews %}
+                {% for review in reviews %}
+                <tr>
+                    <td>{{ review['id'] }}</td>
+                    <td>{{ review['book_id'] }}</td>
+                    <td>{{ review['grade'] }}</td>
+                    <td>{{ review['text'] }}</td>
+                </tr>
+                {% endfor %}
+                {% endblock %}
+                {% endblock %}
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="c15h" class="container" style="display: flex;">
+    <form class="title">Промокоды</form>
+</div>
+<div id="c15" class="container" style="display: flex; margin-bottom: 20px;">
+    <div style="float: center;">
+        <div style="display: table;">
+            <table id="table5">
+                {% block table_promo_codes_content %}
+                <tr>
+                    <th>Id</th>
+                    <th>Book id</th>
+                    <th>Code</th>
+                    <th>Discount</th>
+                    <th>Valid until</th>
+                </tr>
+                {% block table_promo_codes %}
+                {% for promo_code in promo_codes %}
+                <tr>
+                    <td>{{ promo_code['id'] }}</td>
+                    <td>{{ promo_code['book_id'] }}</td>
+                    <td>{{ promo_code['code'] }}</td>
+                    <td>{{ promo_code['discount'] }}</td>
+                    <td>{{ promo_code['valid_until'] }}</td>
+                </tr>
+                {% endfor %}
+                {% endblock %}
+                {% endblock %}
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_content %}
+<script type="text/javascript">
+    window.onload = function() {
+        document.getElementById('#form profile_b').className = 'really_selected';
+    }
+</script>
+{% endblock %}
+{% endif %}

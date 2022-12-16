@@ -41,6 +41,23 @@ def get_users():
     return render_template('users.html', users=services.get_users(), role=role, user_id=user_id)
 
 
+@app.route('/Profile', methods=['GET'])
+def get_profile():
+    loginpass = request.cookies.get('loginpass')
+    user_data = services.get_user_data(services.get_uid(loginpass))
+    return render_template(
+        'profile.html',
+        role=services.get_role(loginpass),
+        name=user_data[0][0]['name'],
+        balance=user_data[0][0]['balance'],
+        history=user_data[1],
+        favorite_books=user_data[2],
+        purchased_books=user_data[3],
+        reviews=user_data[4],
+        promo_codes=user_data[5]
+    )
+
+
 @app.route('/UsersJSON', methods=['GET'])
 def get_users_json():
     return str(services.get_users())
@@ -54,7 +71,7 @@ def get_users_csv():
 
 @app.route('/Users/get_user_data', methods=['POST'])
 def get_user_data():
-    return services.get_user_data(request.form)
+    return services.get_user_data(request.form.to_dict()['user_id'])
 
 
 @app.route('/Authors', methods=['GET'])

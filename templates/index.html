@@ -38,12 +38,17 @@ $('#successAlert').hide();
 } else {
 $('#errorAlert').hide();
 if (response.role != '') {
-    if (response.role == 'admin')
+    if (response.role == 'admin') {
         document.getElementById('#form promocodes').style.display = 'inline';
-    else
+        document.getElementById('#form users').style.display = 'inline';
+        document.getElementById('#form profile').style.display = 'none';
+    }
+    else {
         document.getElementById('#form promocodes').style.display = 'none';
+        document.getElementById('#form users').style.display = 'none';
+        document.getElementById('#form profile').style.display = 'inline';
+    }
     document.getElementById('#form reviews').style.display = 'inline';
-    document.getElementById('#form users').style.display = 'inline';
     document.getElementById('#form authors').style.display = 'inline';
     document.getElementById('#form publishers').style.display = 'inline';
     document.getElementById('#form books').style.display = 'inline';
@@ -55,6 +60,7 @@ else {
     document.getElementById('#form authors').style.display = 'none';
     document.getElementById('#form publishers').style.display = 'none';
     document.getElementById('#form books').style.display = 'none';
+    document.getElementById('#form profile').style.display = 'none';
 }
 }
 });
