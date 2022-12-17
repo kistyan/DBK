@@ -1,10 +1,8 @@
-import datetime
-import os
-from flask import current_app, send_file
+from flask import send_file
+
 import models
 from peewee import fn
 from playhouse.shortcuts import model_to_dict
-
 from config import app
 
 
